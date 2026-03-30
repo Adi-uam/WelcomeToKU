@@ -1,0 +1,101 @@
+
+.header {
+  background-color: #1bb3c2;
+  height: 150px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  padding-left: 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 80px;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+ justify-content: space-between;
+ 
+}
+.logo {
+  position: relative;
+  display: flex;
+  height: 100px;
+  width: 100px;
+  right: 690px;
+  padding-top: 6px;
+  
+}
+.navigation {
+  display: flex;
+  font-size: 30px;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center; 
+  padding: 50px 20px;
+}
+.steps {
+  display: flex;            /* Включаем гибкий контейнер */
+  justify-content: center;   /* Центрируем карточки по горизонтали */
+  align-items: center;       /* Центрируем карточки (и стрелки) по вертикали */
+  gap: 30px;                /* Расстояние между карточками */
+  width: 100%;              /* Контейнер занимает всю ширину */
+  margin-top: 50px;         /* Отступ сверху от заголовка */
+  flex-wrap: nowrap;
+}
+.card {
+  background-color: #fff;
+  border-radius: 15px;      /* Скругление как на макете */
+  width: 220px;             /* Фиксированная ширина */           /* Фиксированная высота */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Мягкая тень */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.3s ease; /* Анимация при наведении */
+}
+
+.main_page {
+  padding-top: 130px;
+}
+.icon {
+  background-color: rgb(255, 255, 255);
+ 
+  
+}
+.card:hover {
+  transform: translateY(-10px); /* Карточка чуть «подпрыгивает» */
+}
+.card h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 0.9rem;
+  color: #777;
+  line-height: 1.4;
+}
+
+.icon {
+  font-size: 40px;
+  margin-bottom: 20px;
+  color: #3182ce; 
+}
+
+.arrow {
+  font-size: 24px;
+  color: #cbd5e0;
+  font-weight: bold;
+}
+
+
+@media (max-width: 768px) {
+  .cards-container {
+    flex-direction: column;
+  }
+  .arrow {
+    transform: rotate(90deg);
+  }
+}
