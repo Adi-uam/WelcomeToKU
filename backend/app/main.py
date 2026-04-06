@@ -1,5 +1,8 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
+load_dotenv()
 
 from app import models
 from app.database import engine, get_db
@@ -10,6 +13,12 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Welcome to KU AI Assistant")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():

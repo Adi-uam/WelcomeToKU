@@ -1,5 +1,5 @@
 from app.ml.predictor import predict_grant_probability
-
+from app.services.groq_client import get_specialties_from_groq
 SPECIALTIES = {
     "IT": ["math", "physics", "coding", "videogame", "programming"],
     "Medicine": ["biology", "animals" "chemistry"],
@@ -23,9 +23,10 @@ def match_specialties(interests):
 
 def get_recommendation(student):
     prob = predict_grant_probability(student.gpa, student.ent_score)
-    specialties = match_specialties(student.interests)
-
+    groq_result = get_specialties_from_groq(student.interests)
+    
     return {
-        "recommended_specialties": specialties,
-        "grant_probability": prob
+        "recommended_specialties": groq_result["specialties"],
+        "grant_probability": prob ,
+        "explanation" : groq_result["explanation"]
     }

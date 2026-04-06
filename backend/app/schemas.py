@@ -10,3 +10,4 @@ class StudentCreate(BaseModel):
 class StudentResponse(BaseModel):
     recommended_specialties: List[str]
     grant_probability: float
+    explanation : str

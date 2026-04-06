@@ -1,46 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Welсome to Ku</title>
+  <title>Welcome to KU</title>
   <link rel="stylesheet" href="ku.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
 </head>
 <body>
+
 <header class="header"> Welcome to KU!
-<div class="logo"><img src="images.html/logowhite.png"  
-  alt='kozybaev university' width="300">
-</div></header>
+  <div class="logo">
+    <img src="images.html/logowhite.png" alt='kozybaev university' width="300">
+  </div>
+</header>
 
 <div class="main_page">
+
+  <!-- Блок с шагами как было -->
   <section class="navigation">
-<div class="steps"><div class="card">
-  <img src="images.html/data.png" alt="" class="icon" 
-  width="100">
-  <h3>Введите данные</h3>
-  <p>(балл ЕНТ, оценки, интересы)</p>
+    <div class="steps">
+      <div class="card">
+        <img src="images.html/data.png" alt="" class="icon" width="100">
+        <h3>Введите данные</h3>
+        <p>(балл ЕНТ, оценки, интересы)</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card">
+        <img src="images.html/analysis.png" class="icon" width="100">
+        <h3>Бот анализирует</h3>
+        <p>данные прошлых лет</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="card">
+        <img src="images.html/target.png" alt="" width="100">
+        <h3>Получите специальности</h3>
+        <p>рекомендованные именно вам</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Форма -->
+  <section class="form_section">
+    <h2>Узнайте свою специальность</h2>
+    <p>Заполните данные и ИИ подберёт подходящие направления</p>
+
+    <div class="form_block">
+
+      <!-- GPA — выбор из списка -->
+      <div class="form_group">
+        <label>GPA (средний балл)</label>
+        <select id="gpa">
+          <option value="4.0">4.0 — Отлично</option>
+          <option value="3.5" selected>3.5 — Хорошо</option>
+          <option value="3.0">3.0 — Средне</option>
+          <option value="2.5">2.5 — Удовлетворительно</option>
+          <option value="2.0">2.0 — Слабо</option>
+        </select>
+      </div>
+
+      <!-- ЕНТ балл — ввод числа -->
+      <div class="form_group">
+        <label>Балл ЕНТ</label>
+        <input type="number" id="ent_score" placeholder="например 110" min="0" max="140">
+      </div>
+
+      <!-- Интересы — свободный текст -->
+      <div class="form_group">
+        <label>Ваши интересы</label>
+        <input type="text" id="interests" placeholder="например: биология, химия, животные">
+        <small>Введите через запятую</small>
+      </div>
+
+      <button onclick="sendRequest()">Узнать специальность</button>
+    </div>
+  </section>
+
+  <!-- Ответ бота — скрыт пока не придёт ответ -->
+  <section class="result_section" id="result_section" style="display:none">
+    <h2>Ответ ИИ</h2>
+    <div class="result_block">
+      <div class="result_specialties">
+        <h3>Рекомендуемые специальности:</h3>
+        <div id="specialties_list"></div>
+      </div>
+      <div class="result_explanation">
+        <h3>Почему именно они:</h3>
+        <p id="explanation_text"></p>
+      </div>
+      <div class="result_grant">
+        <h3>Вероятность гранта:</h3>
+        <p id="grant_text"></p>
+      </div>
+    </div>
+  </section>
+
 </div>
-<div class="arrow">-</div>
-<div class="card">
-      <img src="images.html/analysis.png" class="icon"
-       width="100">
-      <h3>Бот анализирует</h3>
-      <p>данные прошлых лет</p>
-    </div>
 
-    <div class="arrow">-</div>
+<script>
+  async function sendRequest() {
+    // Берём значения из формы
+    const gpa = parseFloat(document.getElementById("gpa").value);
+    const ent_score = parseInt(document.getElementById("ent_score").value);
+    
+    // Интересы — разбиваем строку по запятой и убираем пробелы
+    const interestsRaw = document.getElementById("interests").value;
+    const interests = interestsRaw.split(",").map(i => i.trim()).filter(i => i !== "");
 
-    <div class="card">
-     <img src="images.html/target.png" alt="" width="100">
-      <h3>Получите специальности</h3>
-      <p>рекомендованные именно вам</p>
-    </div>
+    // Простая валидация
+    if (!ent_score || interests.length === 0) {
+      alert("Заполните балл ЕНТ и интересы");
+      return;
+    }
 
+    // Меняем кнопку пока ждём ответ
+    const btn = document.querySelector("button");
+    btn.textContent = "Анализируем...";
+    btn.disabled = true;
 
-  
-</div></section>
+    try {
+      // Отправляем POST запрос на бэкенд
+      const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gpa, ent_score, interests })
+      });
 
+      const data = await response.json();
+
+      // Отображаем специальности как теги
+      const specialtiesList = document.getElementById("specialties_list");
+      specialtiesList.innerHTML = data.recommended_specialties
+        .map(s => `<span class="tag">${s}</span>`)
+        .join("");
+
+      // Объяснение и вероятность гранта
+      document.getElementById("explanation_text").textContent = data.explanation;
+      document.getElementById("grant_text").textContent = `${data.grant_probability}%`;
+
+      // Показываем блок с ответом
+      document.getElementById("result_section").style.display = "block";
+
+    } catch (error) {
+      alert("Ошибка соединения с сервером. Убедитесь что бэкенд запущен.");
+    }
+
+    // Возвращаем кнопку
+    btn.textContent = "Узнать специальность";
+    btn.disabled = false;
+  }
+</script>
 
 </body>
-</html> 
+</html>
